@@ -2,18 +2,59 @@
   <div class="login">
     <hm-header>登录</hm-header>
     <hm-logo></hm-logo>
-    <div class="username">
-      <input type="text" placeholder="请输入用户名" />
-    </div>
-    <div class="password">
-      <input type="passworrd" placeholder="请输入用户名" />
-    </div>
-    <hm-button>登录</hm-button>
+    <!-- 父组件使用的时候，需要传递type和placeholder -->
+    <hm-input
+      type="text"
+      placeholder="请输入用户名"
+      v-model="username"
+      :rule="/^1\d{4,10}$/"
+      message="用户名格式错误"
+    ></hm-input>
+    <hm-input
+      type="password"
+      placeholder="请输入密码"
+      v-model="password"
+      :rule="/^\d{3,12}$/"
+      message="用户密码格式错误"
+    ></hm-input>
+    <hm-button @click="login">登录</hm-button>
   </div>
 </template>
 
 <script>
-export default {}
+//导入axios
+// import axios from 'axios'
+export default {
+  methods: {
+    login() {
+      this.$axios({
+        method: 'post',
+        url: '/login',
+        data: {
+          username: this.username,
+          password: this.password
+        }
+      }).then(res => {
+        // console.log(res.data)
+        // 根据后台的响应数据进行处理
+        if (res.data.statusCode === 200) {
+          //登录成功
+          alert('登录成功')
+          //跳转到个人中心
+          this.$router.push('/user')
+        } else {
+          alert('用户名或者密码错误')
+        }
+      })
+    }
+  },
+  data() {
+    return {
+      username: '',
+      password: ''
+    }
+  }
+}
 </script>
 
 <style></style>

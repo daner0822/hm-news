@@ -8,13 +8,15 @@ Vue.use(VueRouter)
 //导入组件
 import Login from '../pages/Login.vue'
 import Register from '../pages/Register.vue'
+import User from '../pages/User.vue'
 
 //路由实例
 const router = new VueRouter({
   routes: [
     { path: '/', redirect: '/login' },
     { path: '/login', component: Login },
-    { path: '/register', component: Register }
+    { path: '/register', component: Register },
+    { path: '/user', component: User }
   ]
 })
 

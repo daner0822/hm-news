@@ -11,6 +11,14 @@ import './styles/iconfont.css'
 // 他会给每一个屏幕设置一个html的大小  会把屏幕的大小/10 = 1rem
 import 'lib-flexible'
 
+// axios的优化
+// axios和vue没有关系，强行让axios和Vue有关系
+// 把axios绑定到了vue的原型上，所有的vue实例（组件）都可以通过 this.axios访问到axios
+import axios from 'axios'
+Vue.prototype.$axios = axios
+// 给axios配置默认的基础路径,axios在发请求的时候，把url的路径自动拼接上baseURL
+axios.defaults.baseURL = 'http://localhost:3000'
+
 //全局注册
 import HmHeader from './components/HmHeader.vue'
 Vue.component('hm-header', HmHeader)
@@ -18,7 +26,8 @@ import HmLogo from './components/HmLogo.vue'
 Vue.component('hm-logo', HmLogo)
 import HmButton from './components/HmButton.vue'
 Vue.component('hm-button', HmButton)
-
+import HmInput from './components/HmInput.vue'
+Vue.component('hm-input', HmInput)
 // 导入路由
 import router from './router'
 new Vue({
