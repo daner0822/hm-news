@@ -44,6 +44,9 @@ import HmButton from './components/HmButton.vue'
 Vue.component('hm-button', HmButton)
 import HmInput from './components/HmInput.vue'
 Vue.component('hm-input', HmInput)
+import HmNavbar from './components/HmNavbar.vue'
+Vue.component('hm-navbar', HmNavbar)
+
 // 导入路由
 import router from './router'
 new Vue({
