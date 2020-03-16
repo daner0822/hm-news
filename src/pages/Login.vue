@@ -21,6 +21,10 @@
     ></hm-input>
     <hm-button @click="login">登录</hm-button>
     <!-- <van-button type="primary">主要按钮</van-button> -->
+    <div class="go-register">
+      没有账号？去
+      <router-link class="link" to="/register">注册</router-link>
+    </div>
   </div>
 </template>
 
@@ -65,8 +69,23 @@ export default {
       username: '',
       password: ''
     }
+  },
+  //数据已修改完成 就直接获取
+  created() {
+    //通过this.$route.params来获取参数, 注册完成 直接获取到注册的用户名和密码并渲染出来
+    this.username = this.$route.params.username
+    this.password = this.$route.params.password
   }
 }
 </script>
 
-<style></style>
+<style lang="less" scoped>
+.go-register {
+  padding: 0 20px;
+  font-size: 14px;
+  text-align: right;
+  .link {
+    color: orange;
+  }
+}
+</style>

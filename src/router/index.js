@@ -14,9 +14,9 @@ import User from '../pages/User.vue'
 const router = new VueRouter({
   routes: [
     { path: '/', redirect: '/login' },
-    { path: '/login', component: Login },
-    { path: '/register', component: Register },
-    { path: '/user', component: User }
+    { path: '/login', name: 'login', component: Login },
+    { path: '/register', name: 'register', component: Register },
+    { path: '/user', name: 'user', component: User }
   ]
 })
 
