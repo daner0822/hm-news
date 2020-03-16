@@ -19,6 +19,22 @@ Vue.prototype.$axios = axios
 // 给axios配置默认的基础路径,axios在发请求的时候，把url的路径自动拼接上baseURL
 axios.defaults.baseURL = 'http://localhost:3000'
 
+//---------------vant-ui------------------------
+//全局注册vant 缺点:大部分中组件用不到,最终项目打包就会变得比较大。
+// import Vant from 'vant'
+// import 'vant/lib/index.css'
+// // 使用vant插件
+// Vue.use(Vant)
+
+//按需加载按钮(推荐)
+import { Button } from 'vant'
+Vue.use(Button)
+//按需加载toast
+import { Toast } from 'vant'
+Vue.use(Toast)
+
+//--------------------------------------------
+
 //全局注册
 import HmHeader from './components/HmHeader.vue'
 Vue.component('hm-header', HmHeader)

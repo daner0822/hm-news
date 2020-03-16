@@ -40,13 +40,19 @@ export default {
       // console.log(e.target.value)
       let value = e.target.value
       this.$emit('input', value)
-
+      //调用并传参
+      this.validate(value)
+    },
+    validate(value) {
       //需要在内容发生改变的时候，进行表单的校验
       if (this.rule) {
         if (this.rule.test(value)) {
           this.status = 'success'
+          //返回验证的状态
+          return true
         } else {
           this.status = 'error'
+          return false
         }
         console.log(this.status)
       }
