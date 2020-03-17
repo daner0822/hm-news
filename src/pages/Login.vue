@@ -50,10 +50,18 @@ export default {
           password: this.password
         }
       }).then(res => {
-        // console.log(res.data)
+        // console.log(res)
+
+        const { statusCode, data, message } = res.data
         // 根据后台的响应数据进行处理
-        if (res.data.statusCode === 200) {
+        if (statusCode === 200) {
           //登录成功
+          //在登录成功的时候 保存token信息(登陆成功,浏览器自动生成一个token)
+          // localStorage.setItem('token', res.data.data.token)
+          // localStorage.setItem('user_id', res.data.data.user.id)
+          // 解构
+          localStorage.setItem('token', data.token)
+          localStorage.setItem('user_id', data.user.id)
           // 可以调用this.$toast进行提示
           this.$toast.success('登陆成功')
           //跳转到个人中心

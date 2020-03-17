@@ -11,14 +11,6 @@ import './styles/iconfont.css'
 // 他会给每一个屏幕设置一个html的大小  会把屏幕的大小/10 = 1rem
 import 'lib-flexible'
 
-// axios的优化
-// axios和vue没有关系，强行让axios和Vue有关系
-// 把axios绑定到了vue的原型上，所有的vue实例（组件）都可以通过 this.axios访问到axios
-import axios from 'axios'
-Vue.prototype.$axios = axios
-// 给axios配置默认的基础路径,axios在发请求的时候，把url的路径自动拼接上baseURL
-axios.defaults.baseURL = 'http://localhost:3000'
-
 //---------------vant-ui------------------------
 //全局注册vant 缺点:大部分中组件用不到,最终项目打包就会变得比较大。
 // import Vant from 'vant'
@@ -27,15 +19,41 @@ axios.defaults.baseURL = 'http://localhost:3000'
 // Vue.use(Vant)
 
 //按需加载按钮(推荐)
-import { Button } from 'vant'
+import { Button, Toast, Dialog } from 'vant'
 Vue.use(Button)
-//按需加载toast
-import { Toast } from 'vant'
 Vue.use(Toast)
+//弹出确认框
+Vue.use(Dialog)
+
+//---------------axios的优化-------------------
+// axios和vue没有关系，强行让axios和Vue有关系
+import axios from 'axios'
+// 给axios配置默认的基础路径,axios在发请求的时候，把url的路径自动拼接上baseURL
+axios.defaults.baseURL = 'http://localhost:3000'
+// 配置axios的响应拦截器,所有的axios会先经过拦截器,,可以对响应做一些统一的处理
+axios.interceptors.response.use(function(res) {
+  console.log('拦截到res', res)
+  const { statusCode, message } = res.data
+  if (statusCode === 401 && message === '用户信息验证失败') {
+    // 说明token是验证失败的
+    //跳转到登录页
+    router.push('/login')
+    //删除无效的token信息
+    localStorage.removeItem('token')
+    localStorage.removeItem('user_id')
+
+    //提示验证失败
+    Toast.fail(message)
+  }
+  return res
+})
+
+// 把axios绑定到了vue的原型上，所有的vue实例（组件）都可以通过 this.axios访问到axios
+Vue.prototype.$axios = axios
 
 //--------------------------------------------
 
-//全局注册
+//全局注册组件
 import HmHeader from './components/HmHeader.vue'
 Vue.component('hm-header', HmHeader)
 import HmLogo from './components/HmLogo.vue'
@@ -46,6 +64,12 @@ import HmInput from './components/HmInput.vue'
 Vue.component('hm-input', HmInput)
 import HmNavbar from './components/HmNavbar.vue'
 Vue.component('hm-navbar', HmNavbar)
+
+// 全局定义过滤器,过滤时间
+import moment from 'moment'
+Vue.filter('date', function(input) {
+  return moment(input).format('YYYY-MM-DD')
+})
 
 // 导入路由
 import router from './router'

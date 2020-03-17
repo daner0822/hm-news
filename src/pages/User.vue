@@ -1,16 +1,18 @@
 <template>
   <div class="user">
     <hm-header>个人中心</hm-header>
-    <div class="info">
+    <div class="info" @click="$router.push('/edit')">
       <div class="left">
-        <img src="../images/1.jpg" alt />
+        <!-- 需要拼接成一个完整的路径 -->
+        <img :src="$axios.defaults.baseURL + info.head_img" alt />
       </div>
       <div class="center">
         <div class="name">
-          <span class="iconfont iconxingbienan"></span>
-          <span>蛋儿呀</span>
+          <span v-if="info.gender === 1" class="iconfont iconxingbienan"></span>
+          <span v-else class="iconfont iconxingbienv"></span>
+          <span>{{ info.nickname }}</span>
         </div>
-        <div class="time">2020-02-02</div>
+        <div class="time">{{ info.create_date | date }}</div>
       </div>
       <div class="right">
         <span class="iconfont iconjiantou1"></span>
@@ -21,12 +23,64 @@
     <hm-navbar title="我的关注" content="关注的用户"></hm-navbar>
     <hm-navbar title="我的跟帖" content="跟帖/回复"></hm-navbar>
     <hm-navbar title="我的收藏" content="文章/视频"></hm-navbar>
-    <hm-navbar title="设置"></hm-navbar>
+    <hm-navbar title="设置" @click="$router.push('/edit')"></hm-navbar>
+    <hm-navbar title="退出" @click="logout"></hm-navbar>
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  data() {
+    return {
+      // 存放个人信息
+      info: {}
+    }
+  },
+  // 发送ajax请求获取个人信息
+  // 必须在发请求的时候，携带token
+  // token需要通过一个请求头：Authorization
+  created() {
+    const token = localStorage.getItem('token')
+    const user_id = localStorage.getItem('user_id')
+    this.$axios({
+      method: 'get',
+      url: `/user/${user_id}`,
+      //配置请求头
+      headers: {
+        //验证token
+        Authorization: token
+      }
+    }).then(res => {
+      // console.log(res)
+      const { statusCode, data } = res.data
+      if (statusCode === 200) {
+        this.info = data
+        console.log(this.info)
+      }
+    })
+  },
+  //弹出确认框
+  methods: {
+    logout() {
+      this.$dialog
+        .confirm({
+          title: '温馨提示',
+          message: '你确定要退出本系统吗'
+        })
+        .then(() => {
+          // 删除token和id,并跳转到登录页
+          localStorage.removeItem('token')
+          localStorage.removeItem('user_id')
+          this.$router.push('/login')
+          this.$toast.success('退出成功')
+        })
+        .catch(() => {
+          //取消
+          this.$toast('取消退出')
+        })
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>
@@ -51,6 +105,12 @@ export default {}
     .name {
       span {
         font-size: 18px;
+      }
+      .iconxingbienan {
+        color: skyblue;
+      }
+      .iconxingbienv {
+        color: pink;
       }
     }
     .time {

@@ -1,7 +1,7 @@
 <template>
-  <div class="hm-navbar">
-    <div class="left">{{title}}</div>
-    <div class="center">{{content}}</div>
+  <div class="hm-navbar" @click="clickfn">
+    <div class="left">{{ title }}</div>
+    <div class="center">{{ content }}</div>
     <div class="right">
       <span class="iconfont iconjiantou1"></span>
     </div>
@@ -16,6 +16,12 @@ export default {
       required: true
     },
     content: String
+  },
+  methods: {
+    clickfn() {
+      // 当点击navbar的时候，直接触发一个click
+      this.$emit('click')
+    }
   }
 }
 </script>
