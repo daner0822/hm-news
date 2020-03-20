@@ -19,12 +19,28 @@ import 'lib-flexible'
 // Vue.use(Vant)
 
 //按需加载按钮(推荐)
-import { Button, Toast, Dialog } from 'vant'
+import {
+  Button,
+  Toast,
+  Dialog,
+  field,
+  Radio,
+  RadioGroup,
+  Cell,
+  CellGroup,
+  Uploader
+} from 'vant'
 Vue.use(Button)
 Vue.use(Toast)
 //弹出确认框
 Vue.use(Dialog)
-
+//输入框
+Vue.use(field)
+Vue.use(Radio)
+Vue.use(RadioGroup)
+Vue.use(Cell)
+Vue.use(CellGroup)
+Vue.use(Uploader)
 //---------------axios的优化-------------------
 // axios和vue没有关系，强行让axios和Vue有关系
 import axios from 'axios'
@@ -32,7 +48,7 @@ import axios from 'axios'
 axios.defaults.baseURL = 'http://localhost:3000'
 // 配置axios的响应拦截器,所有的axios会先经过拦截器,,可以对响应做一些统一的处理
 axios.interceptors.response.use(function(res) {
-  console.log('拦截到res', res)
+  // console.log('拦截到res', res)
   const { statusCode, message } = res.data
   if (statusCode === 401 && message === '用户信息验证失败') {
     // 说明token是验证失败的
@@ -46,6 +62,13 @@ axios.interceptors.response.use(function(res) {
     Toast.fail(message)
   }
   return res
+})
+//配置axios的请求拦截器
+axios.interceptors.request.use(function(config) {
+  // 统一的给请求添加token
+  const token = localStorage.getItem('token')
+  config.headers.Authorization = token
+  return config
 })
 
 // 把axios绑定到了vue的原型上，所有的vue实例（组件）都可以通过 this.axios访问到axios
@@ -67,8 +90,8 @@ Vue.component('hm-navbar', HmNavbar)
 
 // 全局定义过滤器,过滤时间
 import moment from 'moment'
-Vue.filter('date', function(input) {
-  return moment(input).format('YYYY-MM-DD')
+Vue.filter('date', function(input, format = 'YYYY-MM-DD') {
+  return moment(input).format(format)
 })
 
 // 导入路由
