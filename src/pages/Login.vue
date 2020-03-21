@@ -33,7 +33,7 @@
 // import axios from 'axios'
 export default {
   methods: {
-    login() {
+    async login() {
       // 点击登录按钮的时候，也让input进行校验
       // 获取用户名和密码表单的校验结果 返回true和false
       const result1 = this.$refs.username.validate(this.username)
@@ -42,34 +42,31 @@ export default {
       if (!result1 || !result2) {
         return
       }
-      this.$axios({
+      const res = await this.$axios({
         method: 'post',
         url: '/login',
         data: {
           username: this.username,
           password: this.password
         }
-      }).then(res => {
-        // console.log(res)
-
-        const { statusCode, data, message } = res.data
-        // 根据后台的响应数据进行处理
-        if (statusCode === 200) {
-          //登录成功
-          //在登录成功的时候 保存token信息(登陆成功,浏览器自动生成一个token)
-          // localStorage.setItem('token', res.data.data.token)
-          // localStorage.setItem('user_id', res.data.data.user.id)
-          // 解构
-          localStorage.setItem('token', data.token)
-          localStorage.setItem('user_id', data.user.id)
-          // 可以调用this.$toast进行提示
-          this.$toast.success('登陆成功')
-          //跳转到个人中心
-          this.$router.push('/user')
-        } else {
-          this.$toast.fail('用户名或者密码错误')
-        }
       })
+      const { statusCode, data, message } = res.data
+      // 根据后台的响应数据进行处理
+      if (statusCode === 200) {
+        //登录成功
+        //在登录成功的时候 保存token信息(登陆成功,浏览器自动生成一个token)
+        // localStorage.setItem('token', res.data.data.token)
+        // localStorage.setItem('user_id', res.data.data.user.id)
+        // 解构
+        localStorage.setItem('token', data.token)
+        localStorage.setItem('user_id', data.user.id)
+        // 可以调用this.$toast进行提示
+        this.$toast.success('登陆成功')
+        //跳转到个人中心
+        this.$router.push('/user')
+      } else {
+        this.$toast.fail('用户名或者密码错误')
+      }
     }
   },
   data() {

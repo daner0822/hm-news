@@ -3,54 +3,27 @@
     <hm-header>编辑资料</hm-header>
     <!-- avatar: 头像 -->
     <div class="avatar">
-      <img :src="$axios.defaults.baseURL + info.head_img" alt="" />
+      <img :src="$axios.defaults.baseURL + info.head_img" alt />
       <!-- 上传头像的组件 -->
       <van-uploader class="uploader" :after-read="afterRead" />
     </div>
-    <hm-navbar
-      title="昵称"
-      :content="info.nickname"
-      @click="showNickname"
-    ></hm-navbar>
-    <hm-navbar
-      title="密码"
-      :content="info.password.replace(/./g, '*')"
-      @click="showPassword"
-    ></hm-navbar>
-    <hm-navbar
-      title="性别"
-      :content="info.gender === 1 ? '男' : '女'"
-      @click="showGender"
-    ></hm-navbar>
+    <hm-navbar title="昵称" :content="info.nickname" @click="showNickname"></hm-navbar>
+    <hm-navbar title="密码" :content="info.password.replace(/./g, '*')" @click="showPassword"></hm-navbar>
+    <hm-navbar title="性别" :content="info.gender === 1 ? '男' : '女'" @click="showGender"></hm-navbar>
 
     <!-- 
       修改昵称的对话框
       v-model="show" 通过show的值来控制对话框的显示和隐藏
-     -->
-    <van-dialog
-      v-model="show"
-      title="修改昵称"
-      show-cancel-button
-      @confirm="editNickname"
-    >
+    -->
+    <van-dialog v-model="show" title="修改昵称" show-cancel-button @confirm="editNickname">
       <van-field v-model="nickname" placeholder="请输入用户昵称"></van-field>
     </van-dialog>
     <!-- 修改密码 -->
-    <van-dialog
-      v-model="show1"
-      title="修改昵称"
-      show-cancel-button
-      @confirm="editPassword"
-    >
+    <van-dialog v-model="show1" title="修改昵称" show-cancel-button @confirm="editPassword">
       <van-field v-model="password" placeholder="请输入密码"></van-field>
     </van-dialog>
     <!-- 修改性别 -->
-    <van-dialog
-      v-model="show2"
-      title="修改性别"
-      show-cancel-button
-      @confirm="editGender"
-    >
+    <van-dialog v-model="show2" title="修改性别" show-cancel-button @confirm="editGender">
       <van-radio-group v-model="gender">
         <van-cell-group>
           <van-cell title="男" clickable @click="gender = 1">
@@ -110,24 +83,23 @@ export default {
     this.getInfo()
   },
   methods: {
-    getInfo() {
+    async getInfo() {
       //发送ajax请求 获取信息
       const user_id = localStorage.getItem('user_id')
       const token = localStorage.getItem('token')
-      this.$axios({
+      const res = await this.$axios({
         method: 'get',
         url: `/user/${user_id}`
         //设置响应头
         // headers: {
         //   Authorization: token
         // }
-      }).then(res => {
-        const { statusCode, data } = res.data
-        if (statusCode === 200) {
-          this.info = data
-          console.log(this.info)
-        }
       })
+      const { statusCode, data } = res.data
+      if (statusCode === 200) {
+        this.info = data
+        console.log(this.info)
+      }
     },
     // 点击出现弹框,信息回显
     showNickname() {
@@ -145,27 +117,26 @@ export default {
       this.gender = this.info.gender
     },
     //修改用户信息封装函数
-    editUser(data) {
+    async editUser(data) {
       // 发送请求，修改昵称
       const user_id = localStorage.getItem('user_id')
       const token = localStorage.getItem('token')
-      this.$axios({
+      const res = await this.$axios({
         method: 'post',
         url: `/user_update/${user_id}`,
         data: data
         // headers: {
         //   Authorization: token
         // }
-      }).then(res => {
-        console.log(res.data)
-        const { statusCode, message } = res.data
-        if (statusCode === 200) {
-          // 重新渲染
-          this.getInfo()
-          // 提示修改成功
-          this.$toast.success(message)
-        }
       })
+      // console.log(res.data)
+      const { statusCode, message } = res.data
+      if (statusCode === 200) {
+        // 重新渲染
+        this.getInfo()
+        // 提示修改成功
+        this.$toast.success(message)
+      }
     },
     //修改昵称
     editNickname() {

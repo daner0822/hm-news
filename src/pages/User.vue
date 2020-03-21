@@ -20,16 +20,8 @@
     </div>
 
     <!-- 导航条 -->
-    <hm-navbar
-      title="我的关注"
-      content="关注的用户"
-      @click="$router.push('/my-follow')"
-    ></hm-navbar>
-    <hm-navbar
-      title="我的跟帖"
-      @click="$router.push('/my-comments')"
-      content="跟帖/回复"
-    ></hm-navbar>
+    <hm-navbar title="我的关注" content="关注的用户" @click="$router.push('/my-follow')"></hm-navbar>
+    <hm-navbar title="我的跟帖" @click="$router.push('/my-comments')" content="跟帖/回复"></hm-navbar>
     <hm-navbar title="我的收藏" content="文章/视频"></hm-navbar>
     <hm-navbar title="设置" @click="$router.push('/edit')"></hm-navbar>
     <hm-navbar title="退出" @click="logout"></hm-navbar>
@@ -47,45 +39,36 @@ export default {
   // 发送ajax请求获取个人信息
   // 必须在发请求的时候，携带token
   // token需要通过一个请求头：Authorization
-  created() {
+  async created() {
     const token = localStorage.getItem('token')
     const user_id = localStorage.getItem('user_id')
-    this.$axios({
+    const res = await this.$axios({
       method: 'get',
-      url: `/user/${user_id}`,
-      //配置请求头
-      headers: {
-        //验证token
-        Authorization: token
-      }
-    }).then(res => {
-      // console.log(res)
-      const { statusCode, data } = res.data
-      if (statusCode === 200) {
-        this.info = data
-        console.log(this.info)
-      }
+      url: `/user/${user_id}`
     })
+    const { statusCode, data } = res.data
+    if (statusCode === 200) {
+      this.info = data
+      console.log(this.info)
+    }
   },
   //弹出确认框
   methods: {
-    logout() {
-      this.$dialog
-        .confirm({
+    async logout() {
+      try {
+        await this.$dialog.confirm({
           title: '温馨提示',
           message: '你确定要退出本系统吗'
         })
-        .then(() => {
-          // 删除token和id,并跳转到登录页
-          localStorage.removeItem('token')
-          localStorage.removeItem('user_id')
-          this.$router.push('/login')
-          this.$toast.success('退出成功')
-        })
-        .catch(() => {
-          //取消
-          this.$toast('取消退出')
-        })
+        // 删除token和id,并跳转到登录页
+        localStorage.removeItem('token')
+        localStorage.removeItem('user_id')
+        this.$router.push('/login')
+        this.$toast.success('退出成功')
+      } catch {
+        //取消
+        this.$toast('取消退出')
+      }
     }
   }
 }

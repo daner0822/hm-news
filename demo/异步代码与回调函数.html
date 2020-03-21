@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-Hans-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>课程</title>
+  </head>
+  <body>
+    <script>
+      /*
+      ajax 定时器 注册事件 读写文件都是异步代码
+
+    */
+      console.log(1)
+      setTimeout(() => {
+        console.log(2)
+      }, 0)
+      setTimeout(() => {
+        console.log(4)
+      }, 100)
+      console.log(3)
+      // 执行顺序是1324 log是同步的 setTimeout是异步的,
+      //js是一个单线程,同一时间只能做一件事,但是浏览器是多线程的,
+      //当js从上往下执行的时候会把异步的代码交给浏览器,浏览器到了代码要执行的时候就把异步代码存放到任务队列中,等js执行完其他的,再依次执行任务队列中的代码,这样的循环叫事件循环
+
+      //  回调函数: 衣不带吗总是伴随着回调函数
+      // 回调函数是指回头再调用,把一个函数当做参数传递,这个函数就叫回调函数
+    </script>
+  </body>
+</html>

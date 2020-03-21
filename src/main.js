@@ -28,7 +28,8 @@ import {
   RadioGroup,
   Cell,
   CellGroup,
-  Uploader
+  Uploader,
+  List
 } from 'vant'
 Vue.use(Button)
 Vue.use(Toast)
@@ -41,6 +42,8 @@ Vue.use(RadioGroup)
 Vue.use(Cell)
 Vue.use(CellGroup)
 Vue.use(Uploader)
+Vue.use(List)
+
 //---------------axios的优化-------------------
 // axios和vue没有关系，强行让axios和Vue有关系
 import axios from 'axios'
