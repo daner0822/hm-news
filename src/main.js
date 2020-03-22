@@ -29,7 +29,9 @@ import {
   Cell,
   CellGroup,
   Uploader,
-  List
+  List,
+  Tab,
+  Tabs
 } from 'vant'
 Vue.use(Button)
 Vue.use(Toast)
@@ -43,6 +45,8 @@ Vue.use(Cell)
 Vue.use(CellGroup)
 Vue.use(Uploader)
 Vue.use(List)
+Vue.use(Tab)
+Vue.use(Tabs)
 
 //---------------axios的优化-------------------
 // axios和vue没有关系，强行让axios和Vue有关系
@@ -70,7 +74,10 @@ axios.interceptors.response.use(function(res) {
 axios.interceptors.request.use(function(config) {
   // 统一的给请求添加token
   const token = localStorage.getItem('token')
-  config.headers.Authorization = token
+  // 如果有token，我们才发送Authorization,添加token
+  if (token) {
+    config.headers.Authorization = token
+  }
   return config
 })
 

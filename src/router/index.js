@@ -14,11 +14,12 @@ import Test from '../pages/Test.vue'
 import MyFollow from '../pages/MyFollow.vue'
 import MyComments from '../pages/MyComments.vue'
 import MyStar from '../pages/MyStar.vue'
+import Home from '../pages/Home.vue'
 
 //路由实例
 const router = new VueRouter({
   routes: [
-    { path: '/', redirect: '/login' },
+    { path: '/', name: 'home', component: Home },
     { path: '/login', name: 'login', component: Login },
     { path: '/register', name: 'register', component: Register },
     { path: '/user', name: 'user', component: User },
@@ -35,19 +36,21 @@ const router = new VueRouter({
 // 参数to: 到哪儿去
 // 参数from: 从哪儿来
 // next: 函数   next()表示放行  next('/login') 去登录
+// 需要授权的路径，需要登录才能访问的路径
+const authUrl = ['/user', '/edit', '/my-follow', '/my-star', '/my-comments']
 router.beforeEach(function(to, from, next) {
   // 判断是否有token,如果有token，说明就是登录的，如果没有token，那就是没有登录的
   const token = localStorage.getItem('token')
   //如果去个人中心,必须登录
-  // 需要授权的路径，需要登录才能访问的路径
-  const authUrl = ['/user', '/edit', '/my-follow', '/my-star', '/my-comments']
   if (authUrl.includes(to.path)) {
     //有token
     if (token) {
       next()
     } else {
-      //没有token去登陆
-      next('/login')
+      //没有token去登陆,
+      //如果没有登录,不推荐使用next('/login)
+      // 使用 router.push('/login')
+      router.push('/login')
     }
   } else {
     //放行
