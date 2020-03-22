@@ -13,6 +13,7 @@ import Edit from '../pages/Edit.vue'
 import Test from '../pages/Test.vue'
 import MyFollow from '../pages/MyFollow.vue'
 import MyComments from '../pages/MyComments.vue'
+import MyStar from '../pages/MyStar.vue'
 
 //路由实例
 const router = new VueRouter({
@@ -24,7 +25,8 @@ const router = new VueRouter({
     { path: '/edit', name: 'edit', component: Edit },
     { path: '/test', name: 'test', component: Test },
     { path: '/my-follow', name: 'my-follow', component: MyFollow },
-    { path: '/my-comments', name: 'my-comments', component: MyComments }
+    { path: '/my-comments', name: 'my-comments', component: MyComments },
+    { path: '/my-star', name: 'my-star', component: MyStar }
   ]
 })
 
@@ -38,7 +40,7 @@ router.beforeEach(function(to, from, next) {
   const token = localStorage.getItem('token')
   //如果去个人中心,必须登录
   // 需要授权的路径，需要登录才能访问的路径
-  const authUrl = ['/user', '/edit']
+  const authUrl = ['/user', '/edit', '/my-follow', '/my-star', '/my-comments']
   if (authUrl.includes(to.path)) {
     //有token
     if (token) {
