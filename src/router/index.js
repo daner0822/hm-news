@@ -5,6 +5,14 @@ import VueRouter from 'vue-router'
 //使用路由
 Vue.use(VueRouter)
 
+// 解决NavigationDuplicated报错
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location, onResolve, onReject) {
+  if (onResolve || onReject)
+    return originalPush.call(this, location, onResolve, onReject)
+  return originalPush.call(this, location).catch(err => err)
+}
+
 //导入组件
 import Login from '../pages/Login.vue'
 import Register from '../pages/Register.vue'
@@ -15,6 +23,9 @@ import MyFollow from '../pages/MyFollow.vue'
 import MyComments from '../pages/MyComments.vue'
 import MyStar from '../pages/MyStar.vue'
 import Home from '../pages/Home.vue'
+import PostDetail from '../pages/PostDetail.vue'
+import TabEdit from '../pages/TabEdit.vue'
+import Search from '../pages/Search.vue'
 
 //路由实例
 const router = new VueRouter({
@@ -27,7 +38,10 @@ const router = new VueRouter({
     { path: '/test', name: 'test', component: Test },
     { path: '/my-follow', name: 'my-follow', component: MyFollow },
     { path: '/my-comments', name: 'my-comments', component: MyComments },
-    { path: '/my-star', name: 'my-star', component: MyStar }
+    { path: '/my-star', name: 'my-star', component: MyStar },
+    { path: '/post-detail/:id', name: 'my-post-detail', component: PostDetail },
+    { path: '/tab-edit', name: 'tab-edit', component: TabEdit },
+    { path: '/search', name: 'search', component: Search }
   ]
 })
 

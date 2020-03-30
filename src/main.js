@@ -31,7 +31,8 @@ import {
   Uploader,
   List,
   Tab,
-  Tabs
+  Tabs,
+  PullRefresh
 } from 'vant'
 Vue.use(Button)
 Vue.use(Toast)
@@ -47,6 +48,7 @@ Vue.use(Uploader)
 Vue.use(List)
 Vue.use(Tab)
 Vue.use(Tabs)
+Vue.use(PullRefresh)
 
 //---------------axios的优化-------------------
 // axios和vue没有关系，强行让axios和Vue有关系
@@ -97,12 +99,33 @@ import HmInput from './components/HmInput.vue'
 Vue.component('hm-input', HmInput)
 import HmNavbar from './components/HmNavbar.vue'
 Vue.component('hm-navbar', HmNavbar)
+import HmPost from './components/HmPost.vue'
+Vue.component('hm-post', HmPost)
+import HmComment from './components/HmComment.vue'
+Vue.component('hm-comment', HmComment)
 
 // 全局定义过滤器,过滤时间
 import moment from 'moment'
 Vue.filter('date', function(input, format = 'YYYY-MM-DD') {
   return moment(input).format(format)
 })
+Vue.filter('date2', function(input) {
+  const d = new Date(input)
+  const now = new Date()
+  const hour = ((now - d) / 1000 / 60 / 60) | 0
+  if (hour < 1) {
+    return '1小时内'
+  } else if (hour < 24) {
+    return hour + '小时前'
+  } else {
+    return moment(input).format('YYYY-MM-DD HH:mm:ss')
+  }
+})
+
+//创建空的bus
+const bus = new Vue()
+//把bus绑定到vue原型上,所有组件都能访问到这个bus对象
+Vue.prototype.$bus = bus
 
 // 导入路由
 import router from './router'

@@ -4,7 +4,7 @@
       <div class="left">
         <span class="iconfont iconnew"></span>
       </div>
-      <div class="center">
+      <div class="center" @click="$router.push('/search')">
         <span class="iconfont iconsearch"></span>
         <span class="text">搜索新闻</span>
       </div>
@@ -20,7 +20,27 @@
     -->
     <van-tabs v-model="active" sticky animated swipeable>
       <van-tab :title="item.name" v-for="item in tabList" :key="item.id">
-        <p v-for="item in 40" :key="item.id">内容 1</p>
+        <!-- 
+          @refresh: 下拉会触发的refresh事件
+          refreshing： 控制下拉状态
+         -->
+        <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+          <!-- 包裹文章分页内容 -->
+          <van-list
+            v-model="loading"
+            :finished="finished"
+            finished-text="没有更多数据了"
+            @load="onLoad"
+            :immediate-check="false"
+            :offset="50"
+          >
+            <hm-post
+              v-for="post in postList"
+              :key="post.id"
+              :post="post"
+            ></hm-post>
+          </van-list>
+        </van-pull-refresh>
       </van-tab>
     </van-tabs>
   </div>
@@ -28,16 +48,48 @@
 
 <script>
 export default {
+  name: 'home',
   data() {
     return {
+      // 分类列表的数据
       tabList: [],
-      //激活的tab的下标
-      active: 1
+      // 激活的tab的下标
+      active: 1,
+      //文章列表的数据
+      postList: [],
+      // 控制加载状态
+      loading: false,
+      // 控制是否还有更多数据
+      finished: false,
+      // 当前页
+      pageIndex: 1,
+      // 每页的条数
+      pageSize: 5,
+      // 控制下拉状态
+      // 下拉的时候refreshing回变成true, 需要加载后，把refreshing改成false
+      refreshing: false
     }
   },
-  created() {
+  async created() {
+    const activeTabs = JSON.parse(localStorage.getItem('activeTabs'))
+    if (activeTabs) {
+      this.tabList = activeTabs
+      //发送请求,获取文章列表的数据
+      this.getPostList(this.tabList[this.activeTabs])
+      return
+    }
+    // 如果缓存中没有activeTabs，就发送请求，加载所有的栏目
+    const res = await this.$axios.get('category')
+    const { statusCode, data } = res.data
+    if (statusCode === 200) {
+      //获取所有的分类数据
+      this.tabList = data
+      //获取文章数据,传入当前选中的栏目分类的id
+      this.getPostList(this.tabList[this.active].id)
+    }
+
     //获取栏目列表
-    this.getTabLIst()
+    // this.getTabLIst()
   },
   methods: {
     async getTabLIst() {
@@ -46,23 +98,83 @@ export default {
       // console.log(res.data)
       const { statusCode, data } = res.data
       if (statusCode === 200) {
-        //获取分类列表,还需要获取分类列表下面的文章列表
+        //获取分类列表
         this.tabList = data
         // console.log(this.tabList)
-        //通过tablist下标找到点击分类列表里面的id
+        // 获取文章数据,传入当前选中的栏目分类的id
         this.getPostList(this.tabList[this.active].id)
       }
     },
     // 用于获取某个分类下的文章列表数据
+    // id 分类的id
     async getPostList(id) {
-      console.log('我需要获取分类的id', id, '下面的文章数据')
+      const res = await this.$axios.get('/post', {
+        params: {
+          category: id,
+          pageIndex: this.pageIndex,
+          pageSize: this.pageSize
+        }
+      })
+      // console.log(res.data)
+      const { statusCode, data } = res.data
+      if (statusCode === 200) {
+        //如果频繁的切换，会导致数据清空不及时
+        // 判断页码是1并且还有数据的时候再次清空
+        if (this.postList.length > 0 && this.pageIndex === 1) {
+          this.postList = []
+        }
+        // 数据不能替换，只能追加
+        this.postList = [...this.postList, ...data]
+        // console.log(this.postList)
+        // 数据加载完成，把loading改成false 触发onload
+        this.loading = false
+        // 判断是否还有更多数据
+        if (data.length < this.pageSize) {
+          this.finished = true
+        }
+      }
+    },
+    onLoad() {
+      console.log('触底了')
+      const id = this.tabList[this.active].id
+      setTimeout(() => {
+        //分页+1
+        this.pageIndex++
+        //重新渲染
+        this.getPostList(id)
+      }, 1000)
+    },
+    onRefresh() {
+      // 重新加载所有的数据
+      this.pageIndex = 1
+      this.postList = []
+      this.loading = true
+      this.finished = false
+      // 下拉的时候refreshing回变成true, 需要加载后，把refreshing改成false
+      this.refreshing = false
+      setTimeout(() => {
+        const id = this.tabList[this.active].id
+        this.getPostList(id)
+      }, 1000)
     }
   },
   watch: {
+    //监听active变化 当切换分类的时候,重新获取文章数据
     active(value) {
-      console.log(value)
-      const id = this.tabList[value].id
-      this.getPostList(id)
+      // 切换栏目的时候，需要初始化所有的状态
+      this.postList = []
+      this.pageIndex = 1
+      this.finished = false
+      // loading不应该是false，应该是true，这样可以保证切换的时候不去触发onload事件
+      this.loading = true
+      setTimeout(() => {
+        // 获取变化的分类的id
+        const id = this.tabList[value].id
+        //重新获取文章数据
+        this.getPostList(id)
+      }, 1000)
+      //重新渲染
+      // this.onLoad()
     }
   }
 }

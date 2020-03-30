@@ -62,8 +62,12 @@ export default {
         localStorage.setItem('user_id', data.user.id)
         // 可以调用this.$toast进行提示
         this.$toast.success('登陆成功')
-        //跳转到个人中心
-        this.$router.push('/user')
+        // 如果登录成功了，需要跳转到个人中心,也可能需要回跳,判断是否需要回跳
+        if (this.$route.params.back) {
+          this.$router.back()
+        } else {
+          this.$router.push('/user')
+        }
       } else {
         this.$toast.fail('用户名或者密码错误')
       }
