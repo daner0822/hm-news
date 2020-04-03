@@ -71,6 +71,8 @@ export default {
     }
   },
   async created() {
+    console.log('home组件创建了')
+
     const activeTabs = JSON.parse(localStorage.getItem('activeTabs'))
     if (activeTabs) {
       this.tabList = activeTabs
@@ -90,6 +92,9 @@ export default {
 
     //获取栏目列表
     // this.getTabLIst()
+  },
+  destroyed() {
+    console.log('home组件被销毁了')
   },
   methods: {
     async getTabLIst() {
@@ -176,6 +181,16 @@ export default {
       //重新渲染
       // this.onLoad()
     }
+  },
+  // 离开home组件的时候，会触发的钩子函数
+  beforeRouteLeave(to, from, next) {
+    console.log('我要离开home组件了')
+    console.log('to', to)
+    //判断离开home,是否进入详情页,是就需要缓存,不是就不要缓存
+    if (to.name !== 'my-post-detail') {
+      this.$store.commit('uncache', 'home')
+    }
+    next()
   }
 }
 </script>

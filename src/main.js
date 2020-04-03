@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import App from './App.vue'
-
+import store from './store'
 Vue.config.productionTip = false
 
 // 引入通用样式base.less文件
@@ -131,5 +131,6 @@ Vue.prototype.$bus = bus
 import router from './router'
 new Vue({
   router,
+  store,
   render: h => h(App)
 }).$mount('#app')

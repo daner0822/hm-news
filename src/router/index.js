@@ -1,6 +1,7 @@
 //导入vue-router
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import store from '../store'
 
 //使用路由
 Vue.use(VueRouter)
@@ -14,18 +15,28 @@ VueRouter.prototype.push = function push(location, onResolve, onReject) {
 }
 
 //导入组件
-import Login from '../pages/Login.vue'
-import Register from '../pages/Register.vue'
-import User from '../pages/User.vue'
-import Edit from '../pages/Edit.vue'
-import Test from '../pages/Test.vue'
-import MyFollow from '../pages/MyFollow.vue'
-import MyComments from '../pages/MyComments.vue'
-import MyStar from '../pages/MyStar.vue'
-import Home from '../pages/Home.vue'
-import PostDetail from '../pages/PostDetail.vue'
-import TabEdit from '../pages/TabEdit.vue'
-import Search from '../pages/Search.vue'
+// import Login from '../pages/Login.vue' 同步组件
+//异步组件 懒加载   首屏按虚、需加载
+const Login = () => import(/* webpackChunkName: "user" */ '../pages/Login.vue')
+const Register = () =>
+  import(/* webpackChunkName: "user" */ '../pages/Register.vue')
+const User = () => import(/* webpackChunkName: "user" */ '../pages/User.vue')
+const Edit = () => import(/* webpackChunkName: "user" */ '../pages/Edit.vue')
+const Test = () => import(/* webpackChunkName: "user" */ '../pages/Test.vue')
+const MyFollow = () =>
+  import(/* webpackChunkName: "user" */ '../pages/MyFollow.vue')
+const MyComments = () =>
+  import(/* webpackChunkName: "user" */ '../pages/MyComments.vue')
+const MyStar = () =>
+  import(/* webpackChunkName: "user" */ '../pages/MyStar.vue')
+const Home = () => import(/* webpackChunkName: "home" */ '../pages/Home.vue')
+
+const PostDetail = () =>
+  import(/* webpackChunkName: "home" */ '../pages/PostDetail.vue')
+const TabEdit = () =>
+  import(/* webpackChunkName: "home" */ '../pages/TabEdit.vue')
+const Search = () =>
+  import(/* webpackChunkName: "home" */ '../pages/Search.vue')
 
 //路由实例
 const router = new VueRouter({
@@ -53,6 +64,13 @@ const router = new VueRouter({
 // 需要授权的路径，需要登录才能访问的路径
 const authUrl = ['/user', '/edit', '/my-follow', '/my-star', '/my-comments']
 router.beforeEach(function(to, from, next) {
+  // 在导航守卫中, 判断是否是进入home组件，如果进入的是home组件，我们就把home组件缓存起来。
+  // console.log(to)
+
+  if (to.name === 'home') {
+    console.log('需要缓存home组件')
+    store.commit('cache', 'home')
+  }
   // 判断是否有token,如果有token，说明就是登录的，如果没有token，那就是没有登录的
   const token = localStorage.getItem('token')
   //如果去个人中心,必须登录

@@ -101,6 +101,7 @@ export default {
     }
   },
   created() {
+    console.log('详情页组件创建')
     this.getDetail()
     this.getComments()
 

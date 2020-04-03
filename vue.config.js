@@ -1,9 +1,9 @@
-module.exports={
-  devServer:{
-    open:true,
+module.exports = {
+  devServer: {
+    open: true
   },
-   // 配置px自动转rem的
-   css: {
+  // 配置px自动转rem的
+  css: {
     loaderOptions: {
       css: {},
       postcss: {
@@ -15,6 +15,19 @@ module.exports={
           })
         ]
       }
+    }
+  },
+  //按需加载
+  configureWebpack: {
+    externals: {
+      // vue: 模块名字
+      // 'Vue' 全局变量Vue
+      // 告诉webpack  import Vue from 'vue'
+      vue: 'Vue',
+      'vue-router': 'VueRouter',
+      moment: 'moment',
+      axios: 'axios',
+      lodash: '_'
     }
   }
 }
